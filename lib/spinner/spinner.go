@@ -8,7 +8,10 @@ Usage:
 */
 package spinner
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // Spinner show loading line with spin icon & msg
 // e.g. "⠋ Loading"
@@ -19,10 +22,11 @@ type Spinner interface {
 	Success(msg string)                                                // alias to Stop() & CheckPoint(IconCheck, ColorGreen, msg, ColorReset)
 	Failed(msg string)                                                 // alias to Stop() & CheckPoint(IconCross, ColorRed, msg, ColorReset)
 
-	SetIconFrames([]string) Spinner  // custom spin icon frames
-	SetIconColor(Color) Spinner      // custom spin icon color
-	SetMsg(msg string) Spinner       // custom spin msg content
-	SetMsgColor(color Color) Spinner // custom spin msg color
+	SetSpinGap(spinGap time.Duration) Spinner // custom spin render time gap
+	SetIconFrames([]string) Spinner           // custom spin icon frames
+	SetIconColor(Color) Spinner               // custom spin icon color
+	SetMsg(msg string) Spinner                // custom spin msg content
+	SetMsgColor(color Color) Spinner          // custom spin msg color
 }
 
 // Color color enum

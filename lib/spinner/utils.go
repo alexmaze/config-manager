@@ -1,6 +1,9 @@
 package spinner
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // TermAction vt100 actions
 // ref: http://ascii-table.com/ansi-escape-sequences-vt-100.php
@@ -25,11 +28,16 @@ func (a TermAction) Execute() {
 // spin icon sample frames
 var sampleSpinFrames1 = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
 var sampleSpinFrames2 = []string{"⁎", "*", "⁑"}
-var sampleSpinFrames3 = []string{".  ", " . ", "  ."}
+var sampleSpinFrames3 = []string{"..  ", " .. ", "  ..", "   .", ".   "}
 var sampleSpinFrames4 = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
+var sampleSpinFrames5 = []string{"✵", "✴", "✳", "✶", "✷"}
 
 // DefaultSpinFrames default spin icon frames
 var DefaultSpinFrames = sampleSpinFrames1
 
 // DefaultMsg default spin msg
 var DefaultMsg = "Working..."
+
+// DefaultSpinGap is time between spin frames, control render rate
+// ~ 10fps
+const DefaultSpinGap = time.Duration(time.Millisecond * 100)

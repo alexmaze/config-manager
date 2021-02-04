@@ -8,10 +8,6 @@ import (
 	"golang.org/x/term"
 )
 
-// SpinGap is time between spin frames, control render rate
-// ~ 10fps
-const SpinGap = time.Duration(time.Millisecond * 100)
-
 // New create a spinner
 func New(msg ...string) Spinner {
 	m := DefaultMsg
@@ -20,6 +16,7 @@ func New(msg ...string) Spinner {
 	}
 
 	return &_Spinner{
+		spinGap:            DefaultSpinGap,
 		msg:                m,
 		msgColor:           ColorReset,
 		spinIconFrames:     DefaultSpinFrames,
@@ -35,6 +32,7 @@ type _Spinner struct {
 	lock   sync.RWMutex
 	done   *chan bool
 
+	spinGap            time.Duration
 	spinIconFrames     []string
 	spinIconFrameIndex int
 	spinIconColor      Color
@@ -66,6 +64,7 @@ func (s *_Spinner) Stop() {
 
 	if s.done != nil {
 		*s.done <- true
+		s.done = nil
 	}
 }
 
@@ -119,12 +118,24 @@ func (s *_Spinner) SetIconColor(color Color) Spinner {
 	return s
 }
 
+func (s *_Spinner) SetSpinGap(spinGap time.Duration) Spinner {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if spinGap != s.spinGap {
+		s.spinGap = spinGap
+		s.ticker.Reset(spinGap)
+	}
+
+	return s
+}
+
 func (s *_Spinner) reset() {
 	// reset ticker
 	if s.ticker != nil {
 		s.ticker.Stop()
 	}
-	s.ticker = time.NewTicker(SpinGap)
+	s.ticker = time.NewTicker(s.spinGap)
 	s.ticker.Stop()
 
 	// reset done chan
@@ -136,7 +147,7 @@ func (s *_Spinner) reset() {
 }
 
 func (s *_Spinner) run() {
-	s.ticker.Reset(SpinGap)
+	s.ticker.Reset(s.spinGap)
 
 	// 启动
 	go func() {
